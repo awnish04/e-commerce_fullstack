@@ -4,15 +4,8 @@ import { getCurrentUser } from "@/lib/auth/auth";
 import { AppSidebar } from "@/components/admin/app-sidebar";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 import { BreadcrumbContent } from "@/components/admin/breadcrumb-content";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 export default async function DashboardLayout({
   children,
@@ -42,28 +35,20 @@ export default async function DashboardLayout({
   });
 
   return (
-    <SidebarProvider>
-      <AppSidebar user={user} stores={stores} currentStore={store} />
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 px-4 border-b bg-background">
-          <SidebarTrigger className="-ml-1" />
-          <Separator orientation="vertical" className="mr-2 h-4" />
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href={`/${storeId}`}>Dashboard</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator className="hidden md:block" />
-              <BreadcrumbItem>
-                <BreadcrumbContent />
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </header>
-        <main className="flex-1 p-4 overflow-auto">
-          {children}
-        </main>
-      </SidebarInset>
-    </SidebarProvider>
+    <TooltipProvider>
+      <SidebarProvider>
+        <AppSidebar user={user} stores={stores} />
+        <SidebarInset>
+          <header className="flex h-16 shrink-0 items-center gap-2 px-4 border-b bg-background">
+            <SidebarTrigger className="-ml-1" />
+            <Separator orientation="vertical" className="mr-2 h-full" />
+            <BreadcrumbContent />
+          </header>
+          <main className="flex-1 overflow-auto">
+            {children}
+          </main>
+        </SidebarInset>
+      </SidebarProvider>
+    </TooltipProvider>
   );
 }

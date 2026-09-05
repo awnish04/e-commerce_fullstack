@@ -3,13 +3,41 @@ globalThis.__BUILD_MANIFEST = {
     "/_app": []
   },
   "devFiles": [],
-  "polyfillFiles": [],
+  "polyfillFiles": [
+    "static/chunks/1wk3_next_dist_build_polyfills_polyfill-nomodule.js"
+  ],
   "lowPriorityFiles": [
     "static/development/_buildManifest.js",
     "static/development/_ssgManifest.js",
     "static/development/_clientMiddlewareManifest.js"
   ],
-  "rootMainFiles": [],
-  "rootMainFilesTree": {},
-  "pagesChunkGroupBootstrapParams": {}
+  "rootMainFiles": [
+    "static/chunks/[turbopack]_browser_dev_hmr-client_hmr-client_ts_20zkoaf._.js",
+    "static/chunks/1wk3_next_dist_compiled_next-devtools_index_0-rsmr_.js",
+    "static/chunks/1wk3_next_dist_compiled_react-dom_0_d3mnq._.js",
+    "static/chunks/1wk3_next_dist_compiled_react-server-dom-turbopack_1pc5ky8._.js",
+    "static/chunks/1wk3_next_dist_compiled_0_exieo._.js",
+    "static/chunks/1wk3_next_dist_client_1dso1lm._.js",
+    "static/chunks/1wk3_next_dist_0y7_2k7._.js",
+    "static/chunks/0zix_@swc_helpers_cjs_0hi-e47._.js",
+    "static/chunks/_1anvha4._.js",
+    "static/chunks/turbopack-_0kkts1l._.js"
+  ],
+  "rootMainFilesTree": {
+    "/(admin)/(dashboard)/[storeId]/(routes)/page": [
+      "static/chunks/[turbopack]_browser_dev_hmr-client_hmr-client_ts_20zkoaf._.js",
+      "static/chunks/1wk3_next_dist_compiled_next-devtools_index_0-rsmr_.js",
+      "static/chunks/1wk3_next_dist_compiled_react-dom_0_d3mnq._.js",
+      "static/chunks/1wk3_next_dist_compiled_react-server-dom-turbopack_1pc5ky8._.js",
+      "static/chunks/1wk3_next_dist_compiled_0_exieo._.js",
+      "static/chunks/1wk3_next_dist_client_1dso1lm._.js",
+      "static/chunks/1wk3_next_dist_0y7_2k7._.js",
+      "static/chunks/0zix_@swc_helpers_cjs_0hi-e47._.js",
+      "static/chunks/_1anvha4._.js",
+      "static/chunks/turbopack-_0kkts1l._.js",
+      "static/chunks/_1bkf7k5._.js"
+    ]
+  },
+  "pagesChunkGroupBootstrapParams": {},
+  "chunkLoadingGlobal": "TURBOPACK"
 };

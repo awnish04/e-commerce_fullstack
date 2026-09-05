@@ -1,1 +1,4 @@
-{}
+{
+  "/(admin)/(dashboard)/[storeId]/(routes)/page": "app/(admin)/(dashboard)/[storeId]/(routes)/page.js",
+  "/api/auth/me/route": "app/api/auth/me/route.js"
+}
