@@ -1,8 +1,13 @@
 {
   "app": {
-    "[project]/app/(admin)/(dashboard)/[storeId]/(routes)/page": [
+    "[project]/app/(admin)/(dashboard)/[storeId]/(routes)/billboards/page": [
       "static/media/caa3a2e1cccd8315-s.p.0wgildi0cnwt9.woff2",
       "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+    ],
+    "[project]/app/(store)/(routes)/page": [
+      "static/media/caa3a2e1cccd8315-s.p.0wgildi0cnwt9.woff2",
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/5c8bbc89ca099f34-s.p.2qijkc4_gtkq0.woff2"
     ]
   },
   "appUsingSizeAdjust": true,

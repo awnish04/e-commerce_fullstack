@@ -15,13 +15,13 @@ interface CategoryPageProps {
 
 const CategoryPage: React.FC<CategoryPageProps> = async ({ params }) => {
   const { categoryId } = await params;
-  
+
   const products = await getProducts({
     categoryId,
   });
-  
+
   const category = await getCategory(categoryId);
-  
+
   if (!category) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -34,16 +34,18 @@ const CategoryPage: React.FC<CategoryPageProps> = async ({ params }) => {
       </div>
     );
   }
-  
+
   return (
     <div className="bg-white dark:bg-gray-900 min-h-screen">
       <Container>
-        <Billboard data={category.billboard} />
+        {category.billboard && <Billboard data={category.billboard} />}
         <div className="px-4 sm:px-6 lg:px-8 pb-24">
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <h1 className="text-3xl font-bold">{category.name}</h1>
-              <p className="text-muted-foreground">{products.length} products</p>
+              <p className="text-muted-foreground">
+                {products.length} products
+              </p>
             </div>
 
             {products.length === 0 ? (

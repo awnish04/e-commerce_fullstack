@@ -4,7 +4,7 @@ import prismadb from "@/lib/db/prismadb";
 
 export async function POST(
   req: Request,
-  { params }: { params: Promise<{ storeId: string }> }
+  { params }: { params: Promise<{ storeId: string }> },
 ) {
   try {
     const { storeId } = await params;
@@ -16,7 +16,7 @@ export async function POST(
 
     const userId = user.id;
     const body = await req.json();
-    
+
     const { name, billboardId } = body;
 
     if (!name) {
@@ -43,6 +43,10 @@ export async function POST(
     const category = await prismadb.category.create({
       data: {
         name,
+        slug: `${String(name)
+          .toLowerCase()
+          .trim()
+          .replace(/[^a-z0-9]+/g, "-")}-${Date.now()}`,
         billboardId,
         storeId: storeId,
       },
@@ -57,7 +61,7 @@ export async function POST(
 
 export async function GET(
   req: Request,
-  { params }: { params: Promise<{ storeId: string }> }
+  { params }: { params: Promise<{ storeId: string }> },
 ) {
   try {
     const { storeId } = await params;
@@ -65,11 +69,10 @@ export async function GET(
       return new NextResponse("Store id is required", { status: 400 });
     }
 
-
     const categories = await prismadb.category.findMany({
-      where:{
-        storeId:storeId
-      }
+      where: {
+        storeId: storeId,
+      },
     });
 
     return NextResponse.json(categories);
@@ -78,4 +81,3 @@ export async function GET(
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 }
-

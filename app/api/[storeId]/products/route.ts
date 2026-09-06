@@ -4,7 +4,7 @@ import prismadb from "@/lib/db/prismadb";
 
 export async function POST(
   req: Request,
-  { params }: { params: Promise<{ storeId: string }> }
+  { params }: { params: Promise<{ storeId: string }> },
 ) {
   try {
     const { storeId } = await params;
@@ -59,6 +59,10 @@ export async function POST(
     const product = await prismadb.product.create({
       data: {
         name,
+        slug: `${String(name)
+          .toLowerCase()
+          .trim()
+          .replace(/[^a-z0-9]+/g, "-")}-${Date.now()}`,
         description: description || null,
         price,
         categoryId,
@@ -70,11 +74,9 @@ export async function POST(
         storeId: storeId,
         images: {
           createMany: {
-            data: [
-              ...images.map((image: { url: string }) => image)
-            ]
-          }
-        }
+            data: [...images.map((image: { url: string }) => image)],
+          },
+        },
       },
     });
 
@@ -87,7 +89,7 @@ export async function POST(
 
 export async function GET(
   req: Request,
-  { params }: { params: Promise<{ storeId: string }> }
+  { params }: { params: Promise<{ storeId: string }> },
 ) {
   try {
     const { storeId } = await params;
@@ -105,15 +107,15 @@ export async function GET(
         storeId: storeId,
         categoryId,
         isFeatured: isFeatured === "true" ? true : undefined,
-        isArchived: false
+        isArchived: false,
       },
       include: {
         images: true,
         category: true,
       },
       orderBy: {
-        createdAt: 'desc'
-      }
+        createdAt: "desc",
+      },
     });
 
     return NextResponse.json(products);

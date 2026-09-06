@@ -5,7 +5,6 @@ import axios from "axios";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { Trash } from "lucide-react";
-import { Store } from "@prisma/client";
 import { useForm } from "react-hook-form";
 import { useOrigin } from "@/hooks/use-origin";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,7 +14,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Heading } from "@/components/ui/heading";
 import { ApiAlert } from "@/components/ui/api-alert";
-import { Separator } from "@/components/ui/separator";
 import { AlertModal } from "@/components/admin/modals/alert-modal";
 import {
   Form,
@@ -27,7 +25,9 @@ import {
 } from "@/components/ui/form";
 
 interface SettingsFormProps {
-  initialData: Store;
+  initialData: {
+    name: string;
+  };
 }
 
 const formSchema = z.object({
@@ -96,7 +96,6 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
           <Trash className="h-4 w-4" />
         </Button>
       </div>
-      <Separator />
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -126,7 +125,6 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
           </Button>
         </form>
       </Form>
-      <Separator/>
       <ApiAlert 
       title="NEXT_PUBLIC_API_URL" 
       description={`${origin}/api/${params.storeId}`}

@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import {
   Store,
   LayoutDashboard,
@@ -20,7 +21,6 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -42,105 +42,80 @@ interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
     name?: string | null;
     email: string;
   } | null;
-  stores?: Array<{
+  store: {
     id: string;
     name: string;
-  }>;
+  };
 }
 
-export function AppSidebar({ user, stores = [], ...props }: AppSidebarProps) {
+export function AppSidebar({ user, store, ...props }: AppSidebarProps) {
   const params = useParams();
   const pathname = usePathname();
   const router = useRouter();
   const storeId = params?.storeId as string;
 
-  const currentStore = stores.find((s) => s.id === storeId);
+  const navigation = React.useMemo(
+    () => [
+      {
+        title: "Overview",
+        icon: LayoutDashboard,
+        href: `/${storeId}`,
+      },
+      {
+        title: "Billboards",
+        icon: Image,
+        href: `/${storeId}/billboards`,
+      },
+      {
+        title: "Categories",
+        icon: FolderTree,
+        href: `/${storeId}/categories`,
+      },
+      {
+        title: "Products",
+        icon: Package,
+        href: `/${storeId}/products`,
+      },
+      {
+        title: "Orders",
+        icon: ShoppingCart,
+        href: `/${storeId}/orders`,
+      },
+      {
+        title: "Settings",
+        icon: Settings,
+        href: `/${storeId}/settings`,
+      },
+    ],
+    [storeId],
+  );
 
-  const navigation = [
-    {
-      title: "Overview",
-      icon: LayoutDashboard,
-      href: `/${storeId}`,
-    },
-    {
-      title: "Billboard",
-      icon: Image,
-      href: `/${storeId}/billboards`,
-    },
-    {
-      title: "Categories",
-      icon: FolderTree,
-      href: `/${storeId}/categories`,
-    },
-    {
-      title: "Products",
-      icon: Package,
-      href: `/${storeId}/products`,
-    },
-    {
-      title: "Orders",
-      icon: ShoppingCart,
-      href: `/${storeId}/orders`,
-    },
-    {
-      title: "Settings",
-      icon: Settings,
-      href: `/${storeId}/settings`,
-    },
-  ];
-
-  const handleSignOut = async () => {
+  const handleSignOut = React.useCallback(async () => {
     await fetch("/api/auth/signout", { method: "POST" });
     router.push("/sign-in");
     router.refresh();
-  };
+  }, [router]);
+
+  const userInitials = React.useMemo(
+    () =>
+      user?.name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || "U",
+    [user],
+  );
 
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuButton
-                  size="lg"
-                  className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                >
-                  <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                    <Store className="size-4" />
-                  </div>
-                  <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">
-                      {currentStore?.name || "Select Store"}
-                    </span>
-                    <span className="truncate text-xs">Admin Dashboard</span>
-                  </div>
-                  <ChevronsUpDown className="ml-auto" />
-                </SidebarMenuButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-                align="start"
-                side="bottom"
-                sideOffset={4}
-              >
-                <DropdownMenuLabel className="text-xs text-muted-foreground">
-                  Your Stores
-                </DropdownMenuLabel>
-                {stores.map((store) => (
-                  <DropdownMenuItem
-                    key={store.id}
-                    onClick={() => router.push(`/${store.id}`)}
-                    className="gap-2 p-2"
-                  >
-                    <div className="flex size-6 items-center justify-center rounded-sm border">
-                      <Store className="size-4 shrink-0" />
-                    </div>
-                    {store.name}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <SidebarMenuButton size="lg">
+              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                <Store className="size-4" />
+              </div>
+              <div className="grid flex-1 text-left text-sm leading-tight">
+                <span className="truncate font-semibold">{store.name}</span>
+                <span className="truncate text-xs">Admin Dashboard</span>
+              </div>
+            </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
@@ -158,10 +133,10 @@ export function AppSidebar({ user, stores = [], ...props }: AppSidebarProps) {
                       isActive={isActive}
                       tooltip={item.title}
                     >
-                      <a href={item.href}>
+                      <Link href={item.href} prefetch={true}>
                         <item.icon />
                         <span>{item.title}</span>
-                      </a>
+                      </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 );
@@ -181,13 +156,17 @@ export function AppSidebar({ user, stores = [], ...props }: AppSidebarProps) {
                   className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                 >
                   <Avatar className="h-8 w-8 rounded-lg">
-                    <AvatarFallback className="rounded-lg">
-                      {user?.name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || "U"}
+                    <AvatarFallback className="rounded-lg bg-primary/10 text-primary">
+                      {userInitials}
                     </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">{user?.name || "User"}</span>
-                    <span className="truncate text-xs">{user?.email}</span>
+                    <span className="truncate font-semibold">
+                      {user?.name || "User"}
+                    </span>
+                    <span className="truncate text-xs text-muted-foreground">
+                      {user?.email}
+                    </span>
                   </div>
                   <ChevronsUpDown className="ml-auto size-4" />
                 </SidebarMenuButton>
@@ -201,18 +180,25 @@ export function AppSidebar({ user, stores = [], ...props }: AppSidebarProps) {
                 <DropdownMenuLabel className="p-0 font-normal">
                   <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                     <Avatar className="h-8 w-8 rounded-lg">
-                      <AvatarFallback className="rounded-lg">
-                        {user?.name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || "U"}
+                      <AvatarFallback className="rounded-lg bg-primary/10 text-primary">
+                        {userInitials}
                       </AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-semibold">{user?.name || "User"}</span>
-                      <span className="truncate text-xs">{user?.email}</span>
+                      <span className="truncate font-semibold">
+                        {user?.name || "User"}
+                      </span>
+                      <span className="truncate text-xs text-muted-foreground">
+                        {user?.email}
+                      </span>
                     </div>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleSignOut}>
+                <DropdownMenuItem
+                  onClick={handleSignOut}
+                  className="cursor-pointer text-destructive focus:text-destructive"
+                >
                   <LogOut />
                   Sign out
                 </DropdownMenuItem>

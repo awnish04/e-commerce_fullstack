@@ -1,25 +1,25 @@
-import { NextRequest, NextResponse } from 'next/server';
-import prismadb from '@/lib/db/prismadb';
-import { hashPassword, createSession } from '@/lib/auth/auth';
-import { z } from 'zod';
+import { NextRequest, NextResponse } from "next/server";
+import prismadb from "@/lib/db/prismadb";
+import { hashPassword, createSession } from "@/lib/auth/auth";
+import { z } from "zod";
 
 const signupSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-  name: z.string().min(1, 'Name is required').optional(),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+  name: z.string().min(1, "Name is required").optional(),
 });
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    
+
     // Validate input
     const validationResult = signupSchema.safeParse(body);
-    
+
     if (!validationResult.success) {
       return NextResponse.json(
         { error: validationResult.error.issues[0].message },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -32,8 +32,8 @@ export async function POST(request: NextRequest) {
 
     if (existingUser) {
       return NextResponse.json(
-        { error: 'Email already registered' },
-        { status: 409 }
+        { error: "Email already registered" },
+        { status: 409 },
       );
     }
 
@@ -46,7 +46,13 @@ export async function POST(request: NextRequest) {
         email,
         passwordHash,
         name: name || null,
+        stores: {
+          create: {
+            name: "My Store",
+          },
+        },
       },
+      include: { stores: true },
     });
 
     // Create session
@@ -59,12 +65,13 @@ export async function POST(request: NextRequest) {
         email: user.email,
         name: user.name,
       },
+      storeId: user.stores[0].id,
     });
   } catch (error) {
-    console.error('Signup error:', error);
+    console.error("Signup error:", error);
     return NextResponse.json(
-      { error: 'Failed to create account' },
-      { status: 500 }
+      { error: "Failed to create account" },
+      { status: 500 },
     );
   }
 }

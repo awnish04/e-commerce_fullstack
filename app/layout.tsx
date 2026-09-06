@@ -18,8 +18,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning className={cn("font-sans", geist.variable)}>
-      <body className={inter.className} suppressHydrationWarning>{children}</body>
+    <html 
+      lang="en" 
+      suppressHydrationWarning 
+      className={cn("font-sans", geist.variable)}
+    >
+      <head>
+        {/* Suppress React 19 warnings for theme script injection */}
+      </head>
+      <body className={inter.className} suppressHydrationWarning>
+        {children}
+      </body>
     </html>
   );
 }

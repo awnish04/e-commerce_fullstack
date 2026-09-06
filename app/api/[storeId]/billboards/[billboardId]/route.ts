@@ -5,7 +5,7 @@ import prismadb from "@/lib/db/prismadb";
 
 export async function GET(
   req: Request,
-  { params }: { params: Promise<{ billboardId: string }> }
+  { params }: { params: Promise<{ billboardId: string }> },
 ) {
   try {
     const { billboardId } = await params;
@@ -17,6 +17,7 @@ export async function GET(
       where: {
         id: billboardId,
       },
+      include: { images: { orderBy: { sortOrder: "asc" } } },
     });
     return NextResponse.json(billboard);
   } catch (error) {
@@ -27,7 +28,7 @@ export async function GET(
 
 export async function PATCH(
   req: Request,
-  { params }: { params: Promise<{ storeId: string; billboardId: string }> }
+  { params }: { params: Promise<{ storeId: string; billboardId: string }> },
 ) {
   try {
     const { storeId, billboardId } = await params;
@@ -40,11 +41,12 @@ export async function PATCH(
     const userId = user.id;
     const body = await req.json();
 
-    const { label, imageUrl } = body;
+    const { label, imageUrl, images = [] } = body;
+    const imageUrls = images.length ? images : imageUrl ? [imageUrl] : [];
     if (!label) {
       return new NextResponse("Label is required", { status: 400 });
     }
-    if (!imageUrl) {
+    if (!imageUrls.length) {
       return new NextResponse("Image URL is required", { status: 400 });
     }
     if (!billboardId) {
@@ -68,10 +70,23 @@ export async function PATCH(
       },
       data: {
         label,
-        imageUrl,
+        imageUrl: imageUrls[0],
       },
     });
-    return NextResponse.json(billboard);
+    await prismadb.billboardImage.deleteMany({ where: { billboardId } });
+    await prismadb.billboardImage.createMany({
+      data: imageUrls.map((url: string, sortOrder: number) => ({
+        billboardId,
+        url,
+        sortOrder,
+      })),
+    });
+    return NextResponse.json(
+      await prismadb.billboard.findUnique({
+        where: { id: billboardId },
+        include: { images: { orderBy: { sortOrder: "asc" } } },
+      }),
+    );
   } catch (error) {
     console.error("[BILLBOARD_PATCH]", error);
     return new NextResponse("Internal error", { status: 500 });
@@ -80,7 +95,7 @@ export async function PATCH(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: Promise<{ storeId: string; billboardId: string }> }
+  { params }: { params: Promise<{ storeId: string; billboardId: string }> },
 ) {
   try {
     const { storeId, billboardId } = await params;
@@ -90,7 +105,8 @@ export async function DELETE(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const userId = user.id;if (!userId) {
+    const userId = user.id;
+    if (!userId) {
       return new NextResponse("Unauthenticated", { status: 401 });
     }
     if (!billboardId) {

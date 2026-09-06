@@ -4,8 +4,9 @@ import Container from "@/components/store/ui/container";
 import ProductCard from "@/components/store/ui/product-card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import HeroCarousel from "@/components/store/hero-carousel";
 
-export const dynamic = "force-dynamic"
+export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 const HomePage = async () => {
@@ -15,36 +16,9 @@ const HomePage = async () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section - Large billboard area */}
-      <section className="relative h-[70vh] md:h-[80vh] w-full overflow-hidden">
+      <section className="relative h-[100vh] md:h-[100vh] w-full overflow-hidden">
         {billboard ? (
-          <>
-            <div 
-              className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-              style={{ 
-                backgroundImage: `url(${billboard.imageUrl})`,
-              }}
-            >
-              <div className="absolute inset-0 bg-black/30" />
-            </div>
-            <div className="relative z-10 flex h-full items-center justify-center">
-              <div className="text-center px-4 sm:px-6 lg:px-8">
-                <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-4 tracking-tight uppercase">
-                  {billboard.label}
-                </h1>
-                <p className="text-base sm:text-lg md:text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-                  Elevate your performance with premium athletic footwear
-                </p>
-                <Link href="/category">
-                  <Button 
-                    size="lg" 
-                    className="bg-white text-black hover:bg-gray-100 font-semibold px-8 py-6 text-lg rounded-full transition-all duration-300 shadow-xl hover:shadow-2xl"
-                  >
-                    Shop Now
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          </>
+          <HeroCarousel billboard={billboard} />
         ) : (
           <div className="flex h-full items-center justify-center bg-gradient-to-br from-gray-900 to-black">
             <div className="text-center px-4">
@@ -55,8 +29,8 @@ const HomePage = async () => {
                 Performance meets style in every step
               </p>
               <Link href="/category">
-                <Button 
-                  size="lg" 
+                <Button
+                  size="lg"
                   className="bg-white text-black hover:bg-gray-100 font-semibold px-8 py-6 text-lg rounded-full"
                 >
                   Shop Now
@@ -79,7 +53,7 @@ const HomePage = async () => {
                 Discover our best-selling styles
               </p>
             </div>
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
               {products.map((product) => (
                 <ProductCard key={product.id} data={product} />
@@ -100,8 +74,8 @@ const HomePage = async () => {
               Performance meets style in every step you take
             </p>
             <Link href="/category">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-black font-semibold px-8 py-6 rounded-full transition-all duration-300"
               >
                 Shop Now
@@ -131,9 +105,7 @@ const HomePage = async () => {
               <p className="text-gray-400 text-sm uppercase tracking-widest mb-4">
                 New Arrivals
               </p>
-              <p className="text-6xl md:text-8xl font-bold text-white">
-                Fresh
-              </p>
+              <p className="text-6xl md:text-8xl font-bold text-white">Fresh</p>
             </div>
           </div>
         </div>
@@ -146,8 +118,8 @@ const HomePage = async () => {
               Stand out with bold designs that turn heads
             </p>
             <Link href="/category">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-black font-semibold px-8 py-6 rounded-full transition-all duration-300"
               >
                 Shop Now
@@ -162,13 +134,16 @@ const HomePage = async () => {
         <Container>
           <div className="max-w-4xl mx-auto text-center">
             <blockquote className="text-2xl md:text-4xl lg:text-5xl font-bold text-white/90 mb-8 leading-tight">
-              "ON AND I MOVE — SIMPLE AS THAT. I CAN FEEL BUILT FOR MOMENTUM, NOT JUST COMFORT. EVERY STEP FEELS LIKE PURPOSE."
+              "ON AND I MOVE — SIMPLE AS THAT. I CAN FEEL BUILT FOR MOMENTUM,
+              NOT JUST COMFORT. EVERY STEP FEELS LIKE PURPOSE."
             </blockquote>
             <div className="flex items-center justify-center gap-4">
               <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-red-500" />
               <div className="text-left">
                 <p className="text-white font-semibold">Marcus Embury</p>
-                <p className="text-white/60 text-sm">Customer from Netherlands</p>
+                <p className="text-white/60 text-sm">
+                  Customer from Netherlands
+                </p>
               </div>
             </div>
           </div>
@@ -186,15 +161,17 @@ const HomePage = async () => {
               Join the movement on Instagram
             </p>
           </div>
-          
+
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[1, 2, 3, 4].map((item) => (
-              <div 
+              <div
                 key={item}
                 className="aspect-square bg-gradient-to-br from-gray-200 to-gray-300 rounded-lg overflow-hidden group cursor-pointer"
               >
                 <div className="w-full h-full flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-                  <p className="text-gray-400 text-sm">Follow @nivest on Instagram</p>
+                  <p className="text-gray-400 text-sm">
+                    Follow @nivest on Instagram
+                  </p>
                 </div>
               </div>
             ))}
@@ -208,41 +185,91 @@ const HomePage = async () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div className="text-center">
               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
-                <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                <svg
+                  className="w-8 h-8 text-green-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
               </div>
-              <h3 className="font-semibold text-gray-900 mb-2">FSC® certified packaging</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">
+                FSC® certified packaging
+              </h3>
               <p className="text-sm text-gray-600">and paper only.</p>
             </div>
-            
+
             <div className="text-center">
               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-100 flex items-center justify-center">
-                <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                <svg
+                  className="w-8 h-8 text-blue-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                  />
                 </svg>
               </div>
-              <h3 className="font-semibold text-gray-900 mb-2">Orders ship in 3-7 days</h3>
-              <p className="text-sm text-gray-600">with full tracking included.</p>
+              <h3 className="font-semibold text-gray-900 mb-2">
+                Orders ship in 3-7 days
+              </h3>
+              <p className="text-sm text-gray-600">
+                with full tracking included.
+              </p>
             </div>
-            
+
             <div className="text-center">
               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-purple-100 flex items-center justify-center">
-                <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                <svg
+                  className="w-8 h-8 text-purple-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                  />
                 </svg>
               </div>
-              <h3 className="font-semibold text-gray-900 mb-2">Long-wear materials</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">
+                Long-wear materials
+              </h3>
               <p className="text-sm text-gray-600">that hold shape and age.</p>
             </div>
-            
+
             <div className="text-center">
               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-orange-100 flex items-center justify-center">
-                <svg className="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                <svg
+                  className="w-8 h-8 text-orange-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                  />
                 </svg>
               </div>
-              <h3 className="font-semibold text-gray-900 mb-2">30-day easy exchange.</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">
+                30-day easy exchange.
+              </h3>
               <p className="text-sm text-gray-600">No questions asked.</p>
             </div>
           </div>

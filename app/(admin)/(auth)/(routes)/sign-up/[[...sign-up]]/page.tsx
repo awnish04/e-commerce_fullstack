@@ -10,15 +10,17 @@ import { Input } from "@/components/ui/input";
 import { toast } from "react-hot-toast";
 import Link from "next/link";
 
-const formSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
-  confirmPassword: z.string().min(8, "Please confirm your password"),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+const formSchema = z
+  .object({
+    name: z.string().min(1, "Name is required"),
+    email: z.string().email("Invalid email address"),
+    password: z.string().min(8, "Password must be at least 8 characters"),
+    confirmPassword: z.string().min(8, "Please confirm your password"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
 type FormValues = z.infer<typeof formSchema>;
 
@@ -57,9 +59,8 @@ export default function SignUpPage() {
       }
 
       toast.success("Account created successfully");
-      
-      // Redirect to admin root to set up first store
-      router.push("/admin");
+
+      router.push(`/${result.storeId}`);
       router.refresh();
     } catch (error: any) {
       toast.error(error.message || "Something went wrong");
@@ -117,7 +118,10 @@ export default function SignUpPage() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium mb-2">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium mb-2"
+              >
                 Password
               </label>
               <Input
@@ -135,7 +139,10 @@ export default function SignUpPage() {
             </div>
 
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium mb-2">
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm font-medium mb-2"
+              >
                 Confirm Password
               </label>
               <Input
@@ -153,17 +160,15 @@ export default function SignUpPage() {
             </div>
           </div>
 
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={loading}
-          >
+          <Button type="submit" className="w-full" disabled={loading}>
             {loading ? "Creating account..." : "Sign up"}
           </Button>
         </form>
 
         <div className="text-center text-sm">
-          <span className="text-muted-foreground">Already have an account? </span>
+          <span className="text-muted-foreground">
+            Already have an account?{" "}
+          </span>
           <Link
             href="/sign-in"
             className="font-medium text-primary hover:underline"

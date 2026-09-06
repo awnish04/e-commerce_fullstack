@@ -1,6 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+import Image from "next/image";
 import { CellAction } from "./cell-action";
 import { Badge } from "@/components/ui/badge";
 
@@ -14,10 +15,33 @@ export type ProductColumn = {
   stock: number;
   isFeatured: boolean;
   isArchived: boolean;
+  imageUrl: string | null;
   createdAt: string;
 };
 
 export const columns: ColumnDef<ProductColumn>[] = [
+  {
+    accessorKey: "imageUrl",
+    header: "Image",
+    cell: ({ row }) => {
+      const imageUrl = row.original.imageUrl;
+      return imageUrl ? (
+        <div className="relative w-10 h-10 rounded-md overflow-hidden">
+          <Image
+            src={imageUrl}
+            alt={row.original.name}
+            fill
+            className="object-cover"
+            sizes="40px"
+          />
+        </div>
+      ) : (
+        <div className="w-10 h-10 rounded-md bg-muted flex items-center justify-center">
+          <span className="text-xs text-muted-foreground">No image</span>
+        </div>
+      );
+    },
+  },
   { 
     accessorKey: "name", 
     header: "Name",

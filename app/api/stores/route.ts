@@ -7,8 +7,10 @@ export async function GET() {
     const user = await getCurrentUser();
     if (!user) return new NextResponse("Unauthorized", { status: 401 });
 
-    const stores = await prismadb.store.findMany();
-    return NextResponse.json(stores);
+    const store = await prismadb.store.findUnique({
+      where: { userId: user.id },
+    });
+    return NextResponse.json(store ? [store] : []);
   } catch (error) {
     console.error("[STORES_GET]", error);
     return new NextResponse("Internal Server Error", { status: 500 });
@@ -23,7 +25,14 @@ export async function POST(req: Request) {
     const { name } = await req.json();
     if (!name) return new NextResponse("Name is required", { status: 400 });
 
-    const store = await prismadb.store.create({ data: { name } });
+    const store = await prismadb.store.upsert({
+      where: { userId: user.id },
+      update: {},
+      create: {
+        name,
+        userId: user.id,
+      },
+    });
     return NextResponse.json(store);
   } catch (error) {
     console.error("[STORE_POST]", error);

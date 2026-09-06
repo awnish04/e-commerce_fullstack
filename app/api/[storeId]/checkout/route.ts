@@ -14,7 +14,7 @@ export async function OPTIONS() {
 }
 export async function POST(
   req: Request,
-  { params }: { params: Promise<{ storeId: string }> }
+  { params }: { params: Promise<{ storeId: string }> },
 ) {
   const { storeId } = await params;
   const { productIds } = await req.json();
@@ -28,6 +28,7 @@ export async function POST(
         in: productIds,
       },
     },
+    include: { variants: true },
   });
 
   const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
@@ -40,7 +41,9 @@ export async function POST(
           name: product.name,
         },
         // unit_amount: product.price.toNumber() * 100,
-        unit_amount: parseFloat(String(product.price)) * 100,
+        unit_amount: Math.round(
+          Number(product.price ?? product.variants[0]?.price ?? 0) * 100,
+        ),
       },
     });
   });
@@ -49,13 +52,25 @@ export async function POST(
     data: {
       storeId: storeId,
       isPaid: false,
-      orderItems: {
+      subtotal: products.reduce(
+        (total, product) =>
+          total + Number(product.price ?? product.variants[0]?.price ?? 0),
+        0,
+      ),
+      totalPrice: products.reduce(
+        (total, product) =>
+          total + Number(product.price ?? product.variants[0]?.price ?? 0),
+        0,
+      ),
+      items: {
         create: productIds.map((productId: string) => ({
-          product: {
-            connect: {
-              id: productId,
-            },
-          },
+          productId,
+          variantId:
+            products.find((product) => product.id === productId)?.variants[0]
+              ?.id ?? "",
+          quantity: 1,
+          price:
+            products.find((product) => product.id === productId)?.price ?? 0,
         })),
       },
     },
@@ -78,6 +93,6 @@ export async function POST(
     { url: session.url },
     {
       headers: corsHeaders,
-    }
+    },
   );
 }

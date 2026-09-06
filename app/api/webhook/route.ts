@@ -19,6 +19,7 @@ export async function POST(req: Request) {
   } catch (error: any) {
     return new NextResponse(`Webhook Error:${error.message}`, { status: 400 });
   }
+
   const session = event.data.object as Stripe.Checkout.Session;
   const address = session?.customer_details?.address;
 
@@ -34,12 +35,14 @@ export async function POST(req: Request) {
   const addressString = addressComponents.filter((c) => c !== null).join(", ");
 
   if (event.type === "checkout.session.completed") {
+    // Update order with payment info
     const order = await prismadb.order.update({
       where: {
         id: session?.metadata?.orderId,
       },
       data: {
         isPaid: true,
+        status: "CONFIRMED",
         address: addressString,
         phone: session?.customer_details?.phone || "",
       },
@@ -47,18 +50,33 @@ export async function POST(req: Request) {
         items: true,
       },
     });
-    const productIds = order.items.map((orderItem) => orderItem.productId);
 
-    await prismadb.product.updateMany({
+    // Reduce stock for each variant in the order
+    for (const item of order.items) {
+      await prismadb.productVariant.update({
+        where: {
+          id: item.variantId,
+        },
+        data: {
+          stock: {
+            decrement: item.quantity,
+          },
+        },
+      });
+    }
+
+    // Optional: Mark variants as inactive if stock reaches zero
+    await prismadb.productVariant.updateMany({
       where: {
-        id: {
-          in: [...productIds],
+        stock: {
+          lte: 0,
         },
       },
       data: {
-        isArchived: true,
+        isActive: false,
       },
     });
   }
+
   return new NextResponse(null, { status: 200 });
 }

@@ -48,22 +48,8 @@ export default function SignInPage() {
       }
 
       toast.success("Signed in successfully");
-      
-      // Redirect to admin dashboard - fetch first store
-      const storesResponse = await fetch("/api/stores");
-      if (storesResponse.ok) {
-        const stores = await storesResponse.json();
-        if (stores && stores.length > 0) {
-          // Redirect to first store dashboard
-          router.push(`/${stores[0].id}`);
-        } else {
-          // No stores yet, redirect to root to open store creation modal
-          router.push("/admin");
-        }
-      } else {
-        // Fallback to admin root
-        router.push("/admin");
-      }
+
+      router.push(`/${result.storeId}`);
       router.refresh();
     } catch (error: any) {
       toast.error(error.message || "Something went wrong");
@@ -103,7 +89,10 @@ export default function SignInPage() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium mb-2">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium mb-2"
+              >
                 Password
               </label>
               <Input
@@ -121,11 +110,7 @@ export default function SignInPage() {
             </div>
           </div>
 
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={loading}
-          >
+          <Button type="submit" className="w-full" disabled={loading}>
             {loading ? "Signing in..." : "Sign in"}
           </Button>
         </form>

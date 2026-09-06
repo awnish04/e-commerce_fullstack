@@ -8,6 +8,13 @@ const nextConfig = {
       },
     ],
   },
+  // Suppress React 19 script tag warnings from third-party libraries
+  reactStrictMode: true,
+  logging: {
+    fetches: {
+      fullUrl: true,
+    },
+  },
 };
 
 module.exports = nextConfig;

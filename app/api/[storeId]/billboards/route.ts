@@ -4,7 +4,7 @@ import prismadb from "@/lib/db/prismadb";
 
 export async function POST(
   req: Request,
-  { params }: { params: Promise<{ storeId: string }> }
+  { params }: { params: Promise<{ storeId: string }> },
 ) {
   try {
     const { storeId } = await params;
@@ -16,13 +16,14 @@ export async function POST(
 
     const userId = user.id;
     const body = await req.json();
-    
-    const { label, imageUrl } = body;
+
+    const { label, imageUrl, images = [] } = body;
+    const imageUrls = images.length ? images : imageUrl ? [imageUrl] : [];
 
     if (!label) {
       return new NextResponse("Label is required", { status: 400 });
     }
-    if (!imageUrl) {
+    if (!imageUrls.length) {
       return new NextResponse("Image URL is required", { status: 400 });
     }
     if (!storeId) {
@@ -48,8 +49,16 @@ export async function POST(
     const billboard = await prismadb.billboard.create({
       data: {
         label,
-        imageUrl,
-        storeId: storeId,
+        imageUrl: imageUrls[0],
+        store: {
+          connect: { id: storeId },
+        },
+        images: {
+          create: imageUrls.map((url: string, sortOrder: number) => ({
+            url,
+            sortOrder,
+          })),
+        },
       },
     });
 
@@ -62,7 +71,7 @@ export async function POST(
 
 export async function GET(
   req: Request,
-  { params }: { params: Promise<{ storeId: string }> }
+  { params }: { params: Promise<{ storeId: string }> },
 ) {
   try {
     const { storeId } = await params;
@@ -71,9 +80,8 @@ export async function GET(
     }
 
     const billboards = await prismadb.billboard.findMany({
-      where:{
-        storeId:storeId
-      }
+      where: { storeId },
+      include: { images: { orderBy: { sortOrder: "asc" } } },
     });
 
     return NextResponse.json(billboards);

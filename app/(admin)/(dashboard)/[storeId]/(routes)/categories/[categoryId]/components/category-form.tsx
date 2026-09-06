@@ -12,11 +12,23 @@ import { useParams, useRouter } from "next/navigation";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Separator } from "@/components/ui/separator";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Heading } from "@/components/ui/heading";
 import { AlertModal } from "@/components/admin/modals/alert-modal";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const formSchema = z.object({
   name: z.string().min(2),
@@ -30,7 +42,10 @@ interface CategoryFormProps {
   billboards: Billboard[];
 }
 
-export const CategoryForm: React.FC<CategoryFormProps> = ({ initialData, billboards }) => {
+export const CategoryForm: React.FC<CategoryFormProps> = ({
+  initialData,
+  billboards,
+}) => {
   const params = useParams();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -42,15 +57,20 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ initialData, billboa
   const action = initialData ? "Save changes" : "Create";
 
   const form = useForm<CategoryFormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: initialData || { name: "", billboardId: "" },
+    resolver: zodResolver(formSchema) as any,
+    defaultValues: initialData
+      ? { name: initialData.name, billboardId: initialData.billboardId ?? "" }
+      : { name: "", billboardId: "" },
   });
 
   const onSubmit = async (data: CategoryFormValues) => {
     try {
       setLoading(true);
       if (initialData) {
-        await axios.patch(`/api/${params.storeId}/categories/${params.categoryId}`, data);
+        await axios.patch(
+          `/api/${params.storeId}/categories/${params.categoryId}`,
+          data,
+        );
       } else {
         await axios.post(`/api/${params.storeId}/categories`, data);
       }
@@ -67,12 +87,16 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ initialData, billboa
   const onDelete = async () => {
     try {
       setLoading(true);
-      await axios.delete(`/api/${params.storeId}/categories/${params.categoryId}`);
+      await axios.delete(
+        `/api/${params.storeId}/categories/${params.categoryId}`,
+      );
       router.refresh();
       router.push(`/${params.storeId}/categories`);
       toast.success("Category deleted.");
     } catch {
-      toast.error("Make sure you removed all products using this category first.");
+      toast.error(
+        "Make sure you removed all products using this category first.",
+      );
     } finally {
       setLoading(false);
       setOpen(false);
@@ -81,18 +105,30 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ initialData, billboa
 
   return (
     <>
-      <AlertModal isOpen={open} onClose={() => setOpen(false)} onConfirm={onDelete} loading={loading} />
+      <AlertModal
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        onConfirm={onDelete}
+        loading={loading}
+      />
       <div className="flex items-center justify-between">
         <Heading title={title} description={description} />
         {initialData && (
-          <Button disabled={loading} variant="destructive" size="sm" onClick={() => setOpen(true)}>
+          <Button
+            disabled={loading}
+            variant="destructive"
+            size="sm"
+            onClick={() => setOpen(true)}
+          >
             <Trash className="h-4 w-4" />
           </Button>
         )}
       </div>
-      <Separator />
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-8 w-full"
+        >
           <div className="md:grid md:grid-cols-3 gap-8">
             <FormField
               control={form.control}
@@ -101,7 +137,11 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ initialData, billboa
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input disabled={loading} placeholder="Category name" {...field} />
+                    <Input
+                      disabled={loading}
+                      placeholder="Category name"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -113,15 +153,25 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ initialData, billboa
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Billboard</FormLabel>
-                  <Select disabled={loading} onValueChange={field.onChange} value={field.value} defaultValue={field.value}>
+                  <Select
+                    disabled={loading}
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    defaultValue={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue defaultValue={field.value} placeholder="Select a billboard" />
+                        <SelectValue
+                          defaultValue={field.value}
+                          placeholder="Select a billboard"
+                        />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
                       {billboards.map((billboard) => (
-                        <SelectItem key={billboard.id} value={billboard.id}>{billboard.label}</SelectItem>
+                        <SelectItem key={billboard.id} value={billboard.id}>
+                          {billboard.label}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -130,7 +180,9 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ initialData, billboa
               )}
             />
           </div>
-          <Button disabled={loading} className="ml-auto" type="submit">{action}</Button>
+          <Button disabled={loading} className="ml-auto" type="submit">
+            {action}
+          </Button>
         </form>
       </Form>
     </>

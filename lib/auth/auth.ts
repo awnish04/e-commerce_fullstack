@@ -1,14 +1,14 @@
-import { SignJWT, jwtVerify } from 'jose';
-import { cookies } from 'next/headers';
-import { NextRequest, NextResponse } from 'next/server';
-import prismadb from '@/lib/db/prismadb';
-import bcrypt from 'bcryptjs';
+import { SignJWT, jwtVerify } from "jose";
+import { cookies } from "next/headers";
+import { NextRequest, NextResponse } from "next/server";
+import prismadb from "@/lib/db/prismadb";
+import bcrypt from "bcryptjs";
 
 const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || 'your-secret-key-change-in-production'
+  process.env.JWT_SECRET || "your-secret-key-change-in-production",
 );
 
-const SESSION_COOKIE_NAME = 'session';
+const SESSION_COOKIE_NAME = "session";
 const SESSION_DURATION = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
 
 export interface SessionPayload {
@@ -21,16 +21,22 @@ export async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, 10);
 }
 
-export async function verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
+export async function verifyPassword(
+  password: string,
+  hashedPassword: string,
+): Promise<boolean> {
   return bcrypt.compare(password, hashedPassword);
 }
 
-export async function createSession(userId: string, email: string): Promise<string> {
+export async function createSession(
+  userId: string,
+  email: string,
+): Promise<string> {
   const expiresAt = new Date(Date.now() + SESSION_DURATION);
-  
+
   // Create JWT token
   const token = await new SignJWT({ userId, email })
-    .setProtectedHeader({ alg: 'HS256' })
+    .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime(expiresAt)
     .sign(JWT_SECRET);
@@ -47,16 +53,18 @@ export async function createSession(userId: string, email: string): Promise<stri
   // Set cookie
   (await cookies()).set(SESSION_COOKIE_NAME, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
     expires: expiresAt,
-    path: '/',
+    path: "/",
   });
 
   return token;
 }
 
-export async function verifySession(token?: string): Promise<SessionPayload | null> {
+export async function verifySession(
+  token?: string,
+): Promise<SessionPayload | null> {
   if (!token) {
     const cookieStore = await cookies();
     token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
@@ -72,20 +80,23 @@ export async function verifySession(token?: string): Promise<SessionPayload | nu
     const payload = verified.payload as { userId: string; email: string };
 
     // Check if session exists in database and is not expired with timeout
-    const session = await Promise.race([
+    const session = (await Promise.race([
       prismadb.session.findUnique({
         where: { token },
         include: { user: true },
       }),
-      new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Database timeout')), 30000) // Increased to 30 seconds
-      )
-    ]) as any;
+      new Promise(
+        (_, reject) =>
+          setTimeout(() => reject(new Error("Database timeout")), 30000), // Increased to 30 seconds
+      ),
+    ])) as any;
 
     if (!session || session.expiresAt < new Date()) {
       // Clean up expired session (don't wait for it)
       if (session) {
-        prismadb.session.delete({ where: { id: session.id } }).catch(console.error);
+        prismadb.session
+          .delete({ where: { id: session.id } })
+          .catch(console.error);
       }
       return null;
     }
@@ -96,7 +107,7 @@ export async function verifySession(token?: string): Promise<SessionPayload | nu
       expiresAt: session.expiresAt,
     };
   } catch (error) {
-    console.error('Session verification failed:', error);
+    console.error("Session verification failed:", error);
     return null;
   }
 }
@@ -118,7 +129,7 @@ export async function deleteSession(): Promise<void> {
 
 export async function getCurrentUser() {
   const session = await verifySession();
-  
+
   if (!session) {
     return null;
   }
@@ -129,6 +140,7 @@ export async function getCurrentUser() {
       id: true,
       email: true,
       name: true,
+      role: true,
       createdAt: true,
     },
   });
@@ -138,30 +150,36 @@ export async function getCurrentUser() {
 
 export async function requireAuth() {
   const user = await getCurrentUser();
-  
+
   if (!user) {
-    throw new Error('Unauthorized');
+    throw new Error("Unauthorized");
   }
-  
+
   return user;
 }
 
 // Middleware helper to verify session from request
-export async function verifySessionFromRequest(request: NextRequest): Promise<SessionPayload | null> {
+export async function verifySessionFromRequest(
+  request: NextRequest,
+): Promise<SessionPayload | null> {
   const token = request.cookies.get(SESSION_COOKIE_NAME)?.value;
   return verifySession(token);
 }
 
 // Helper to update response with new session cookie
-export function setSessionCookie(response: NextResponse, token: string, expiresAt: Date): NextResponse {
+export function setSessionCookie(
+  response: NextResponse,
+  token: string,
+  expiresAt: Date,
+): NextResponse {
   response.cookies.set(SESSION_COOKIE_NAME, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
     expires: expiresAt,
-    path: '/',
+    path: "/",
   });
-  
+
   return response;
 }
 

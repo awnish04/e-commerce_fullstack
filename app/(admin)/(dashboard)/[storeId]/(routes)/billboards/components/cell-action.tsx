@@ -1,10 +1,11 @@
 "use client";
 
 import { Copy, Edit, MoreHorizontal, Trash } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useParams, useRouter } from "next/navigation";
+import { Billboard } from "@prisma/client";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,6 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { AlertModal } from "@/components/admin/modals/alert-modal";
 import { BillboardColumn } from "./columns";
+import { BillboardDialog } from "./billboard-dialog";
 
 interface CellActionProps {
   data: BillboardColumn;
@@ -24,11 +26,23 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const router = useRouter();
   const params = useParams();
   const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [billboardData, setBillboardData] = useState<Billboard | null>(null);
 
   const onCopy = (id: string) => {
     navigator.clipboard.writeText(id);
-    toast.success("Billboard Id copied to clipboard.");
+    toast.success("Billboard ID copied to clipboard.");
+  };
+
+  const fetchBillboardData = async () => {
+    try {
+      const response = await axios.get(`/api/${params.storeId}/billboards/${data.id}`);
+      setBillboardData(response.data);
+      setEditOpen(true);
+    } catch {
+      toast.error("Failed to load billboard data.");
+    }
   };
 
   const onDelete = async () => {
@@ -41,13 +55,26 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
       toast.error("Make sure you remove all categories using this billboard first.");
     } finally {
       setLoading(false);
-      setOpen(false);
+      setDeleteOpen(false);
     }
   };
 
   return (
     <>
-      <AlertModal isOpen={open} onClose={() => setOpen(false)} onConfirm={onDelete} loading={loading} />
+      <AlertModal
+        isOpen={deleteOpen}
+        onClose={() => setDeleteOpen(false)}
+        onConfirm={onDelete}
+        loading={loading}
+      />
+      <BillboardDialog
+        isOpen={editOpen}
+        onClose={() => {
+          setEditOpen(false);
+          setBillboardData(null);
+        }}
+        initialData={billboardData}
+      />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="h-8 w-8 p-0">
@@ -58,12 +85,12 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
           <DropdownMenuItem onClick={() => onCopy(data.id)}>
-            <Copy className="mr-2 h-4 w-4" /> Copy Id
+            <Copy className="mr-2 h-4 w-4" /> Copy ID
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => router.push(`/${params.storeId}/billboards/${data.id}`)}>
+          <DropdownMenuItem onClick={fetchBillboardData}>
             <Edit className="mr-2 h-4 w-4" /> Update
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setOpen(true)}>
+          <DropdownMenuItem onClick={() => setDeleteOpen(true)}>
             <Trash className="mr-2 h-4 w-4" /> Delete
           </DropdownMenuItem>
         </DropdownMenuContent>

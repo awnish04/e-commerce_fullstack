@@ -1,7 +1,17 @@
 "use client";
 
 import * as React from "react";
-import { ChevronRight, Star, Heart, Share2, ShoppingCart, Camera, Package, Shield, Truck } from "lucide-react";
+import {
+  ChevronRight,
+  Star,
+  Heart,
+  Share2,
+  ShoppingCart,
+  Camera,
+  Package,
+  Shield,
+  Truck,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -16,22 +26,34 @@ interface ProductDetailModernProps {
   product: Product;
 }
 
-const StarRating = ({ rating, className }: { rating: number; className?: string }) => (
+const StarRating = ({
+  rating,
+  className,
+}: {
+  rating: number;
+  className?: string;
+}) => (
   <div className={cn("flex items-center gap-0.5", className)}>
     {[...Array(5)].map((_, i) => (
       <Star
         key={i}
         className={cn(
           "h-4 w-4",
-          i < Math.floor(rating) ? "text-yellow-400 fill-yellow-400" : "text-muted-foreground/50"
+          i < Math.floor(rating)
+            ? "text-yellow-400 fill-yellow-400"
+            : "text-muted-foreground/50",
         )}
       />
     ))}
-    <span className="ml-2 text-sm font-medium text-muted-foreground">{rating.toFixed(1)}</span>
+    <span className="ml-2 text-sm font-medium text-muted-foreground">
+      {rating.toFixed(1)}
+    </span>
   </div>
 );
 
-export const ProductDetailModern: React.FC<ProductDetailModernProps> = ({ product }) => {
+export const ProductDetailModern: React.FC<ProductDetailModernProps> = ({
+  product,
+}) => {
   const [currentImageIndex, setCurrentImageIndex] = React.useState(0);
   const [isFavorited, setIsFavorited] = React.useState(false);
   const cart = useCart();
@@ -61,14 +83,24 @@ export const ProductDetailModern: React.FC<ProductDetailModernProps> = ({ produc
   return (
     <div className="w-full max-w-7xl mx-auto p-4 md:p-8 bg-background text-foreground">
       {/* Breadcrumbs Navigation */}
-      <nav aria-label="Breadcrumb" className="flex items-center text-sm text-muted-foreground mb-4">
-        <Link href="/" className="hover:text-primary transition-colors">Home</Link>
+      <nav
+        aria-label="Breadcrumb"
+        className="flex items-center text-sm text-muted-foreground mb-4"
+      >
+        <Link href="/" className="hover:text-primary transition-colors">
+          Home
+        </Link>
         <ChevronRight className="h-4 w-4 mx-1" />
-        <Link href="/category" className="hover:text-primary transition-colors">Products</Link>
+        <Link href="/category" className="hover:text-primary transition-colors">
+          Products
+        </Link>
         <ChevronRight className="h-4 w-4 mx-1" />
         {product.category && (
           <>
-            <Link href={`/category/${product.category.id}`} className="hover:text-primary transition-colors">
+            <Link
+              href={`/category/${product.category.id}`}
+              className="hover:text-primary transition-colors"
+            >
               {product.category.name}
             </Link>
             <ChevronRight className="h-4 w-4 mx-1" />
@@ -80,12 +112,17 @@ export const ProductDetailModern: React.FC<ProductDetailModernProps> = ({ produc
       <div className="flex justify-between items-center mb-6">
         <div /> {/* Spacer */}
         <div className="flex items-center gap-2">
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             size="icon"
             onClick={() => setIsFavorited(!isFavorited)}
           >
-            <Heart className={cn("h-5 w-5", isFavorited && "fill-red-500 text-red-500")} />
+            <Heart
+              className={cn(
+                "h-5 w-5",
+                isFavorited && "fill-red-500 text-red-500",
+              )}
+            />
             <span className="sr-only">Favorite</span>
           </Button>
           <Button variant="ghost" size="icon" onClick={handleShare}>
@@ -109,7 +146,9 @@ export const ProductDetailModern: React.FC<ProductDetailModernProps> = ({ produc
               className="relative aspect-[4/5] w-full overflow-hidden rounded-xl border bg-gray-100 dark:bg-gray-800"
             >
               <Image
-                src={product.images[currentImageIndex]?.url || "/placeholder.png"}
+                src={
+                  product.images[currentImageIndex]?.url || "/placeholder.png"
+                }
                 alt={`${product.name} image ${currentImageIndex + 1}`}
                 fill
                 className="object-cover"
@@ -125,7 +164,9 @@ export const ProductDetailModern: React.FC<ProductDetailModernProps> = ({ produc
                   onClick={() => setCurrentImageIndex(index)}
                   className={cn(
                     "h-2 w-2 rounded-full transition-colors",
-                    currentImageIndex === index ? "bg-primary" : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
+                    currentImageIndex === index
+                      ? "bg-primary"
+                      : "bg-muted-foreground/30 hover:bg-muted-foreground/50",
                   )}
                   aria-label={`View image ${index + 1}`}
                 />
@@ -144,7 +185,9 @@ export const ProductDetailModern: React.FC<ProductDetailModernProps> = ({ produc
                 onClick={() => setCurrentImageIndex(index)}
                 className={cn(
                   "relative aspect-square rounded-lg overflow-hidden border-2 transition-all",
-                  currentImageIndex === index ? "border-primary" : "border-transparent hover:border-gray-300"
+                  currentImageIndex === index
+                    ? "border-primary"
+                    : "border-transparent hover:border-gray-300",
                 )}
               >
                 <Image
@@ -166,24 +209,36 @@ export const ProductDetailModern: React.FC<ProductDetailModernProps> = ({ produc
                 {product.category.name}
               </Badge>
             )}
-            <h1 className="text-3xl md:text-4xl font-bold tracking-tight">{product.name}</h1>
+            <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+              {product.name}
+            </h1>
           </div>
 
           <div className="flex items-baseline gap-3 mb-2">
-            <span className="text-4xl font-bold">${Number(product.price).toFixed(2)}</span>
+            <span className="text-4xl font-bold">
+              ${Number(product.price).toFixed(2)}
+            </span>
             <span className="text-sm text-muted-foreground line-through">
               ${(Number(product.price) * 1.2).toFixed(2)}
             </span>
-            <Badge variant="destructive" className="ml-2">Save 20%</Badge>
+            <Badge variant="destructive" className="ml-2">
+              Save 20%
+            </Badge>
           </div>
 
           <div className="mb-6">
             <StarRating rating={4.8} />
-            <p className="text-sm text-muted-foreground mt-1">Based on 127 reviews</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Based on 127 reviews
+            </p>
           </div>
 
           <div className="flex gap-2 my-6">
-            <Button size="lg" className="flex-1 gap-2" onClick={handleAddToCart}>
+            <Button
+              size="lg"
+              className="flex-1 gap-2"
+              onClick={handleAddToCart}
+            >
               <ShoppingCart className="h-5 w-5" /> Add to Cart
             </Button>
             <Button size="lg" variant="outline" className="flex-1">
@@ -196,20 +251,30 @@ export const ProductDetailModern: React.FC<ProductDetailModernProps> = ({ produc
             {product.size && (
               <div className="flex items-center gap-2">
                 <span className="text-sm text-muted-foreground">Size:</span>
-                <Badge variant="outline" className="font-semibold">{product.size}</Badge>
+                <Badge variant="outline" className="font-semibold">
+                  {product.size}
+                </Badge>
               </div>
             )}
             {product.color && (
               <div className="flex items-center gap-2">
                 <span className="text-sm text-muted-foreground">Color:</span>
-                <Badge variant="outline" className="font-semibold">{product.color}</Badge>
+                <Badge variant="outline" className="font-semibold">
+                  {product.color}
+                </Badge>
               </div>
             )}
             {product.stock !== undefined && (
               <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">Availability:</span>
-                <Badge variant={product.stock > 0 ? "default" : "destructive"}>
-                  {product.stock > 0 ? `${product.stock} in stock` : "Out of stock"}
+                <span className="text-sm text-muted-foreground">
+                  Availability:
+                </span>
+                <Badge
+                  variant={(product.stock ?? 0) > 0 ? "default" : "destructive"}
+                >
+                  {(product.stock ?? 0) > 0
+                    ? `${product.stock ?? 0} in stock`
+                    : "Out of stock"}
                 </Badge>
               </div>
             )}
@@ -250,12 +315,11 @@ export const ProductDetailModern: React.FC<ProductDetailModernProps> = ({ produc
           <div className="pt-6 border-t">
             <h3 className="font-semibold text-lg mb-3">Description</h3>
             <p className="text-muted-foreground leading-relaxed">
-              {product.description || 
+              {product.description ||
                 `Experience unparalleled comfort and style with the ${product.name}. 
                 Designed for those who demand both performance and aesthetics, this product 
                 combines innovative materials with timeless design. Whether you're hitting 
-                the streets or the gym, you'll feel confident and comfortable every step of the way.`
-              }
+                the streets or the gym, you'll feel confident and comfortable every step of the way.`}
             </p>
           </div>
         </div>

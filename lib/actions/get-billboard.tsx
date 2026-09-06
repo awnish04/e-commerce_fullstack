@@ -1,17 +1,11 @@
 import { Billboard } from "@/shared/types";
-import { getDefaultStoreId } from "@/lib/store-utils";
 
 const getBillboard = async (id: string): Promise<Billboard | null> => {
-  const storeId = await getDefaultStoreId();
-  
-  if (!storeId) {
-    return null;
-  }
-  
-  const URL = `${process.env.NEXT_PUBLIC_API_URL}/${storeId}/billboards`;
+  const URL = `${process.env.NEXT_PUBLIC_API_URL}/billboards`;
   const res = await fetch(`${URL}/${id}`, { cache: 'no-store' });
   
   if (!res.ok) {
+    console.error(`Failed to fetch billboard: ${id}`);
     return null;
   }
   
@@ -19,3 +13,4 @@ const getBillboard = async (id: string): Promise<Billboard | null> => {
 };
 
 export default getBillboard;
+

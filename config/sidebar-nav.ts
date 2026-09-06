@@ -5,8 +5,6 @@ import {
   Package,
   ShoppingCart,
   Settings,
-  Palette,
-  Ruler,
   type LucideIcon,
 } from "lucide-react";
 
@@ -34,16 +32,6 @@ export function getSidebarNavItems(storeId: string): NavItem[] {
       title: "Categories",
       href: `/${storeId}/categories`,
       icon: FolderTree,
-    },
-    {
-      title: "Sizes",
-      href: `/${storeId}/sizes`,
-      icon: Ruler,
-    },
-    {
-      title: "Colors",
-      href: `/${storeId}/colors`,
-      icon: Palette,
     },
     {
       title: "Products",
